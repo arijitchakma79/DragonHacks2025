@@ -85,47 +85,41 @@ export const loginStyles = StyleSheet.create({
   },
 });
 
-// 🏠 Home Screen Styles
+
+
 export const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
-    backgroundColor: colors.primary, // Bud green for home background
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
-    fontSize: fonts.large,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: colors.white,
+    color: '#333',
+    textAlign: 'center',
   },
   text: {
-    fontSize: fonts.regular,
+    fontSize: 16,
+    lineHeight: 24,
     marginBottom: 30,
     textAlign: 'center',
-    color: colors.white,
+    color: '#555',
   },
-  buttonContainer: {
-    marginTop: 20,
-    borderRadius: 10,
-    overflow: 'hidden',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  buttonGradient: {
+  button: {
+    backgroundColor: '#FF3B30',
     paddingVertical: 12,
     paddingHorizontal: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  buttonText: {
-    color: colors.primary,
-    fontSize: fonts.regular,
-    fontWeight: 'bold',
+    borderRadius: 25,
+    marginTop: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
 });
+

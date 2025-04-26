@@ -1,3 +1,4 @@
+/*app/signIn.tsx*/
 import React from 'react';
 import SignInScreen from '../src/screens/SignInScreen';
 
