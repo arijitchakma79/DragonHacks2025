@@ -1,14 +1,17 @@
 import { StyleSheet } from 'react-native';
 
-// Hardcoded style values
+// 🌿 Updated Color Palette
 export const colors = {
-  primary: '#3498db',
+  primary: '#92d4bc',      // Bud Green
+  secondary: '#115642',    // Dark Green
   white: '#FFFFFF',
   black: '#000000',
-  gray: '#CCCCCC',
-  lightGray: '#F5F5F5',
-  error: '#FF0000',
-  text: '#333333',
+  gray: '#AAAAAA',
+  lightGray: '#F0F8F0',    // Light greenish white
+  error: '#FF4C4C',        // Soft red
+  text: '#2E2E2E',         // Dark text
+  gradientStart: '#00c3ff', // Gradient start (Light Blue)
+  gradientEnd: '#7b2ff7',   // Gradient end (Purple)
 };
 
 const fonts = {
@@ -17,30 +20,40 @@ const fonts = {
   small: 14,
 };
 
-// Login Form styles
+// 🖋️ Form Styles (Login & SignIn)
 export const formStyles = StyleSheet.create({
   container: {
     width: '100%',
+    marginTop: 20,
   },
   input: {
     height: 50,
     borderWidth: 1,
     borderColor: colors.gray,
-    borderRadius: 8,
+    borderRadius: 10,
     marginBottom: 15,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     backgroundColor: colors.lightGray,
+    fontSize: fonts.regular,
+    color: colors.text,
   },
   inputError: {
     borderColor: colors.error,
   },
-  button: {
-    backgroundColor: colors.primary,
+  buttonContainer: {
+    marginTop: 20,
+    borderRadius: 10,
+    overflow: 'hidden',
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // Android shadow
+  },
+  buttonGradient: {
     height: 50,
-    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
   },
   buttonText: {
     color: colors.white,
@@ -51,55 +64,67 @@ export const formStyles = StyleSheet.create({
     color: colors.error,
     fontSize: fonts.small,
     marginBottom: 10,
+    textAlign: 'center',
   },
 });
 
-// Login Screen styles
+// 📄 Screen Styles
 export const loginStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: colors.white,
+    backgroundColor: colors.white, // White background for login/signup
   },
   title: {
     fontSize: fonts.large,
     fontWeight: 'bold',
     marginBottom: 30,
     textAlign: 'center',
-    color: colors.text,
+    color: colors.text, // Dark text
   },
 });
 
-// Home Screen styles
+// 🏠 Home Screen Styles
 export const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: colors.white,
+    backgroundColor: colors.primary, // Bud green for home background
   },
   title: {
     fontSize: fonts.large,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: colors.text,
+    color: colors.white,
   },
   text: {
     fontSize: fonts.regular,
     marginBottom: 30,
     textAlign: 'center',
-    color: colors.text,
+    color: colors.white,
   },
-  button: {
-    backgroundColor: colors.primary,
+  buttonContainer: {
+    marginTop: 20,
+    borderRadius: 10,
+    overflow: 'hidden',
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonGradient: {
     paddingVertical: 12,
     paddingHorizontal: 30,
-    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
   },
   buttonText: {
-    color: colors.white,
+    color: colors.primary,
     fontSize: fonts.regular,
     fontWeight: 'bold',
   },

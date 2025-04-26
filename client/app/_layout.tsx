@@ -10,13 +10,12 @@ export default function Layout() {
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="signIn" options={{ headerShown: false }} />
       <Stack.Screen 
         name="home" 
         options={{ 
-          // Optionally show the header on the home screen with a title
-          headerShown: true,
-          title: 'Welcome',
-          // Prevent going back to login screen
+          headerShown: false,
+          title: 'Home',
           headerBackVisible: false,
         }} 
       />
