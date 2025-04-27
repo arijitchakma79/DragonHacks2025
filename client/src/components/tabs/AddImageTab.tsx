@@ -1,12 +1,11 @@
-// src/components/tabs/AddImageTab.tsx
-
 import React, { useState } from 'react';
-import { View, Text, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { tabContentStyles } from '../../styles/tabStyles';
-import { AddImageStyles as styles } from '../../styles/addImageStyles';
-import { handleUpload } from '@/src/utils/uploadFileUtils';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+
+// Your server URL
+const API_BASE_URL = 'http://10.250.106.84:5000';
 
 const AddImageTab = () => {
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
@@ -54,10 +53,30 @@ const AddImageTab = () => {
   const uploadSelectedImage = async (uri: string) => {
     try {
       setUploading(true);
-      await handleUpload(uri, username);
-      alert('Image uploaded successfully!');
+
+      const formData = new FormData();
+
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      formData.append('file', {
+        uri,
+        type: blob.type || 'image/jpeg',
+        name: 'wound_image.jpg',
+      } as any);
+
+      formData.append('username', username);
+
+      await axios.post(`${API_BASE_URL}/upload-wound`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      alert('Wound record uploaded successfully!');
     } catch (error) {
-      alert('Failed to upload image.');
+      console.error('Upload failed:', error);
+      alert('Failed to upload wound record.');
     } finally {
       setUploading(false);
     }
@@ -66,10 +85,10 @@ const AddImageTab = () => {
   return (
     <View style={styles.container}>
       {/* Greeting */}
-      <Text style={styles.greeting}>Hi {username}</Text>
+      <Text style={styles.greeting}>Hi {username} 👋</Text>
 
       {/* Title */}
-      <Text style={styles.title}>Upload an Image</Text>
+      <Text style={styles.title}>Upload Wound Image</Text>
 
       {/* Image Preview */}
       {selectedImageUri && (
@@ -84,13 +103,13 @@ const AddImageTab = () => {
       {/* Buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.uploadButton} onPress={handleTakePhoto} disabled={uploading}>
-          <Ionicons name="camera-outline" size={24} color="#fff" style={styles.icon} />
+          <Ionicons name="camera" size={22} color="#fff" />
           <Text style={styles.uploadButtonText}>Take Photo</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.uploadButton} onPress={handlePickImage} disabled={uploading}>
-          <Ionicons name="image-outline" size={24} color="#fff" style={styles.icon} />
-          <Text style={styles.uploadButtonText}>Upload from Files</Text>
+          <Ionicons name="image" size={22} color="#fff" />
+          <Text style={styles.uploadButtonText}>Pick from Gallery</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -98,3 +117,54 @@ const AddImageTab = () => {
 };
 
 export default AddImageTab;
+
+// 📜 STYLES
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  greeting: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 18,
+    color: '#007AFF',
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  previewImage: {
+    width: 250,
+    height: 250,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 20,
+    resizeMode: 'cover',
+  },
+  buttonContainer: {
+    width: '100%',
+    gap: 15,
+    marginTop: 10,
+  },
+  uploadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    borderRadius: 10,
+  },
+  uploadButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+    marginLeft: 10,
+  },
+});

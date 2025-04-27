@@ -4,6 +4,7 @@ from .download_routes import download_bp
 from .measure_wound import measure_bp 
 from .analyze_routes import analyze_bp
 from .fetch_knowledge_routes import fetch_knowledge_bp
+#from ask_ai_routes import ask
 
 all_blueprints = [
     upload_wound_bp,
