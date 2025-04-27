@@ -1,127 +1,158 @@
 // src/components/tabs/AskAITab.tsx
 
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import axios from 'axios';
-import { tabContentStyles } from '../../styles/tabStyles';
 
-// Your Flask server URL
-const API_BASE_URL = 'http://10.250.106.84:5000'; 
-
-// Sample wound data
-const sampleWoundData = {
-  "records": [
-    { "date": "2025-04-25", "length_cm": 5.2, "width_cm": 4.1 },
-    { "date": "2025-04-26", "length_cm": 5.0, "width_cm": 3.9 },
-    { "date": "2025-04-27", "length_cm": 4.7, "width_cm": 3.7 },
-    { "date": "2025-04-28", "length_cm": 4.4, "width_cm": 3.5 }
-  ]
-};
+const API_BASE_URL = 'http://10.250.106.84:5000'; // your server IP
 
 const AskAITab = () => {
-  const [question, setQuestion] = useState('');
-  const [response, setResponse] = useState('');
+  const [messages, setMessages] = useState<{ role: 'user' | 'ai', text: string }[]>([]);
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleAskGemini = async () => {
-    if (!question.trim()) {
-      alert('Please enter a question!');
-      return;
-    }
+  const scrollRef = useRef<ScrollView>(null);
 
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+
+    const newMessages = [...messages, { role: 'user', text: input }];
+    setMessages(newMessages);
+    setInput('');
     setLoading(true);
-    setResponse('');
 
     try {
+      const woundData = {
+        "records": [
+          { "date": "2025-04-25", "length_cm": 5.2, "width_cm": 4.1 },
+          { "date": "2025-04-26", "length_cm": 5.0, "width_cm": 3.9 },
+          { "date": "2025-04-27", "length_cm": 4.7, "width_cm": 3.7 },
+          { "date": "2025-04-28", "length_cm": 4.4, "width_cm": 3.5 }
+        ]
+      };
+
       const fullPrompt = `
-Here is the patient's wound healing data:
+You are a wound healing assistant AI. Here is the patient's data:
 
-${JSON.stringify(sampleWoundData, null, 2)}
+${JSON.stringify(woundData, null, 2)}
 
-Based on this data, please answer the following question:
-"${question}"
-
-Please keep your answer simple, helpful, and medically appropriate.
+Now answer clearly:
+"${input}"
 `;
 
-      const res = await axios.post(`${API_BASE_URL}/analyze-wound-data`, { "prompt": fullPrompt }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await axios.post(`${API_BASE_URL}/analyze-wound-data`, { prompt: fullPrompt }, {
+        headers: { 'Content-Type': 'application/json' },
       });
 
-      setResponse(res.data.analysis);
+      setMessages(prev => [...prev, { role: 'ai', text: res.data.analysis }]);
     } catch (error) {
-      console.error('Error talking to Gemini:', error);
-      setResponse('Failed to get response from AI.');
+      console.error('Gemini error:', error);
+      setMessages(prev => [...prev, { role: 'ai', text: '❌ Failed to get AI response.' }]);
     } finally {
       setLoading(false);
+      scrollRef.current?.scrollToEnd({ animated: true });
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 20 }}>
-      <Text style={tabContentStyles.title}>💬 Ask AI about your Wound</Text>
+    <KeyboardAvoidingView 
+      style={{ flex: 1, backgroundColor: '#fff' }} 
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={80}
+    >
+      <View style={{ flex: 1 }}>
+        {/* Chat Scroll Area */}
+        <ScrollView
+          ref={scrollRef}
+          style={{ flex: 1 }}
+          contentContainerStyle={{ padding: 10, paddingBottom: 80 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {messages.map((msg, idx) => (
+            <View
+              key={idx}
+              style={[
+                styles.messageBubble,
+                msg.role === 'user' ? styles.userBubble : styles.aiBubble,
+              ]}
+            >
+              <Text style={styles.messageText}>{msg.text}</Text>
+            </View>
+          ))}
+          {loading && (
+            <ActivityIndicator size="small" color="#007AFF" style={{ marginTop: 10 }} />
+          )}
+        </ScrollView>
 
-      {/* Question Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Type your question about the wound healing..."
-        value={question}
-        onChangeText={setQuestion}
-        multiline
-      />
-
-      {/* Ask Button */}
-      <TouchableOpacity style={styles.button} onPress={handleAskGemini} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Thinking...' : 'Ask Gemini'}</Text>
-      </TouchableOpacity>
-
-      {/* Loading Spinner */}
-      {loading && <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />}
-
-      {/* AI Response */}
-      {response.length > 0 && (
-        <View style={styles.responseBox}>
-          <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>🧠 Gemini's Response:</Text>
-          <Text style={{ fontSize: 16 }}>{response}</Text>
+        {/* Input Bar */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Ask Gemini about your wound..."
+            placeholderTextColor="#aaa"
+            multiline
+          />
+          <TouchableOpacity style={styles.sendButton} onPress={sendMessage} disabled={loading}>
+            <Text style={styles.sendButtonText}>Send</Text>
+          </TouchableOpacity>
         </View>
-      )}
-    </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
+export default AskAITab;
+
 const styles = StyleSheet.create({
+  messageBubble: {
+    maxWidth: '80%',
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  userBubble: {
+    backgroundColor: '#007AFF',
+    alignSelf: 'flex-end',
+  },
+  aiBubble: {
+    backgroundColor: '#e6f0ff',
+    alignSelf: 'flex-start',
+  },
+  messageText: {
+    color: '#000',
+    fontSize: 16,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    padding: 10,
+    borderTopColor: '#ccc',
+    borderTopWidth: 1,
+    backgroundColor: '#f9f9f9',
+  },
   input: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 25,
     borderColor: '#ccc',
     borderWidth: 1,
-    padding: 15,
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    height: 120,
-    marginTop: 20,
-    textAlignVertical: 'top',
     fontSize: 16,
+    marginRight: 10,
   },
-  button: {
+  sendButton: {
     backgroundColor: '#007AFF',
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginTop: 20,
-    alignItems: 'center'
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  buttonText: {
+  sendButtonText: {
     color: '#fff',
-    fontWeight: '600',
     fontSize: 16,
-  },
-  responseBox: {
-    backgroundColor: '#f0f8ff',
-    padding: 20,
-    borderRadius: 12,
-    marginTop: 20,
-    width: '100%',
+    fontWeight: '600',
   },
 });
-
-export default AskAITab;

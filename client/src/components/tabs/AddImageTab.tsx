@@ -10,6 +10,7 @@ const API_BASE_URL = 'http://10.250.106.84:5000';
 const AddImageTab = () => {
   const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [showImage, setShowImage] = useState(false); // State to control image visibility
   const username = 'John Doe'; // hardcoded user
 
   const handleTakePhoto = async () => {
@@ -27,6 +28,7 @@ const AddImageTab = () => {
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       setSelectedImageUri(uri);
+      setShowImage(false); // Hide image when a new one is taken
       await uploadSelectedImage(uri);
     }
   };
@@ -46,6 +48,7 @@ const AddImageTab = () => {
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       setSelectedImageUri(uri);
+      setShowImage(false); // Hide image when a new one is selected
       await uploadSelectedImage(uri);
     }
   };
@@ -82,6 +85,11 @@ const AddImageTab = () => {
     }
   };
 
+  // Toggle image visibility
+  const toggleImageVisibility = () => {
+    setShowImage(!showImage);
+  };
+
   return (
     <View style={styles.container}>
       {/* Greeting */}
@@ -90,9 +98,38 @@ const AddImageTab = () => {
       {/* Title */}
       <Text style={styles.title}>Upload Wound Image</Text>
 
-      {/* Image Preview */}
+      {/* Image Section */}
       {selectedImageUri && (
-        <Image source={{ uri: selectedImageUri }} style={styles.previewImage} />
+        <View style={styles.imageContainer}>
+          {/* Hidden/Covered Image */}
+          {!showImage ? (
+            <View style={styles.hiddenImageContainer}>
+              <View style={styles.hiddenImagePlaceholder}>
+                <Ionicons name="medical" size={40} color="#007AFF" />
+                <Text style={styles.hiddenImageText}>Image Hidden</Text>
+                <TouchableOpacity 
+                  style={styles.seeButton}
+                  onPress={toggleImageVisibility}
+                >
+                  <Ionicons name="eye" size={22} color="#fff" />
+                  <Text style={styles.seeButtonText}>See Image</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            // Visible Image
+            <View style={styles.visibleImageContainer}>
+              <Image source={{ uri: selectedImageUri }} style={styles.previewImage} />
+              <TouchableOpacity 
+                style={styles.hideButton}
+                onPress={toggleImageVisibility}
+              >
+                <Ionicons name="eye-off" size={18} color="#fff" />
+                <Text style={styles.hideButtonText}>Hide Image</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       )}
 
       {/* Uploading Indicator */}
@@ -139,14 +176,76 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  previewImage: {
+  imageContainer: {
     width: 250,
     height: 250,
+    marginBottom: 20,
+  },
+  hiddenImageContainer: {
+    width: '100%',
+    height: '100%',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#ccc',
-    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  hiddenImagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f3f3f3',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  hiddenImageText: {
+    fontSize: 16,
+    color: '#555',
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  visibleImageContainer: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+    position: 'relative',
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
     resizeMode: 'cover',
+  },
+  seeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  seeButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  hideButton: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    bottom: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  hideButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+    marginLeft: 5,
   },
   buttonContainer: {
     width: '100%',
