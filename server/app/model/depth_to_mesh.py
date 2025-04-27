@@ -1,3 +1,5 @@
+# app/model/depth_to_mesh.py
+
 import numpy as np
 import open3d as o3d
 from PIL import Image
@@ -16,14 +18,9 @@ depth_pipe = pipeline(
     device=0
 )
 
-def generate_mesh_from_image(file, username):
-    # Save the incoming file temporarily
-    filename = file.filename
-    temp_image_path = os.path.join('uploads', filename)
-    file.save(temp_image_path)
-
+def generate_mesh_from_image_local(image_path, username):
     # Open image
-    image = Image.open(temp_image_path)
+    image = Image.open(image_path)
 
     # Generate depth map
     result = depth_pipe(image)
@@ -59,7 +56,8 @@ def generate_mesh_from_image(file, username):
     mesh.compute_vertex_normals()
 
     # Save mesh temporarily
-    temp_mesh_path = os.path.join('uploads', filename.split('.')[0] + '_3dmodel.obj')
+    mesh_filename = os.path.basename(image_path).split('.')[0] + '_model.obj'
+    temp_mesh_path = os.path.join('uploads', mesh_filename)
     o3d.io.write_triangle_mesh(temp_mesh_path, mesh)
 
     # Upload .obj to MongoDB
@@ -67,15 +65,13 @@ def generate_mesh_from_image(file, username):
     fs_models = gridfs.GridFS(db, collection="models")
 
     with open(temp_mesh_path, "rb") as f:
-        file_id = fs_models.put(f, filename=os.path.basename(temp_mesh_path), metadata={
+        file_id = fs_models.put(f, filename=mesh_filename, metadata={
             'username': username,
-            'source_image': filename,
             'uploadTime': datetime.utcnow(),
             'contentType': 'model/obj'
         })
 
-    # Cleanup temp files
-    os.remove(temp_image_path)
+    # Cleanup mesh file
     os.remove(temp_mesh_path)
 
-    return file_id, os.path.basename(temp_mesh_path)
+    return file_id, mesh_filename

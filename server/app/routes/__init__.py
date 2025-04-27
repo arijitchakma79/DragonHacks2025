@@ -1,7 +1,9 @@
-from .upload_routes import upload_bp
-from .depth_map import depthmap_bp
+from .upload_wound import upload_wound_bp
+from .list_user_wounds import list_wounds_bp
 from .download_routes import download_bp
-from .list_routes import list_bp
-from .generate_3dmodel import generate_bp  
 
-all_blueprints = [upload_bp, depthmap_bp, download_bp, list_bp, generate_bp]
+all_blueprints = [
+    upload_wound_bp,
+    list_wounds_bp,
+    download_bp
+]
