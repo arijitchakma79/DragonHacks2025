@@ -1,3 +1,5 @@
+//src/screens/SignInScreen.tsx
+
 import React from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useRouter } from 'expo-router';

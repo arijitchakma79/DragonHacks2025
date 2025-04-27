@@ -1,3 +1,5 @@
+// src/components/tabs/HistoryTab.tsx
+
 import React from 'react';
 import { View, Text } from 'react-native';
 import { tabContentStyles } from '../../styles/tabStyles';

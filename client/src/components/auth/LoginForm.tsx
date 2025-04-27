@@ -1,3 +1,5 @@
+// src/components/auth/LoginForm.tsx
+
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';

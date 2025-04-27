@@ -1,3 +1,5 @@
+// src/components/TabNavigation.tsx
+
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { navStyles } from '../styles/navStyles';

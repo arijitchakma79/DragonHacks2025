@@ -1,4 +1,4 @@
-// app/login.tsx → imports this screen
+//src/screens/LoginScreen.tsx
 
 import React from 'react';
 import { View, Text, TouchableWithoutFeedback, Keyboard } from 'react-native';
