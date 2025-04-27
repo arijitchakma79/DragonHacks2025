@@ -1,0 +1,1 @@
+The picture of the wound in this folder is taken from the ChronicWoundsDatabase project under the CC 4.0 Licence. No modifications were made. 
