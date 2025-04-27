@@ -20,7 +20,7 @@ const HomeScreen = () => {
     router.replace('/login');
   };
   
-  const handleTabPress = (tabName) => {
+  const handleTabPress = (tabName: string) => {
     setActiveTab(tabName);
   };
   

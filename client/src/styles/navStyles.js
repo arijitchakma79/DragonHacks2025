@@ -1,4 +1,6 @@
 // In your navStyles.ts file
+import { StyleSheet } from 'react-native';
+
 export const navStyles = StyleSheet.create({
     navContainer: {
       flexDirection: 'row',
